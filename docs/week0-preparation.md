@@ -53,9 +53,13 @@ git push -u origin main
 ### A3. Python 绘图环境（5 分钟）
 
 ```bash
-python3 -m venv ~/venvs/plot
+sudo apt install -y python3.12-venv    # venv 依赖的系统包（需要密码，清单初版漏了它）
+rm -rf ~/venvs/plot                    # 若之前建到一半失败，先清掉半成品
+python3 -m venv ~/venvs/plot           # 创建隔离的 Python 虚拟环境
 ~/venvs/plot/bin/pip install matplotlib -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
+
+验证：`~/venvs/plot/bin/python -c "import matplotlib; print(matplotlib.__version__)"` 能打印版本号即可。
 
 ### A4. 编辑器（10 分钟）
 
