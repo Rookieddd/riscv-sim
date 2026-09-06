@@ -20,6 +20,9 @@ void mem_init(memory_t *m)
 
 /*
  * 1) 小端拼字：mem[addr] 是最低字节；
+        示例：32位整数 0x12345678 的存储方式
+        大端：低地址→高地址 [12] [34] [56] [78] 
+        小端：低地址→高地址 [78] [56] [34] [12]
  * 2) read32/write32 先查 addr % 4 == 0，read16/write16 先查 addr % 2 == 0；
  * 3) 越界判断：addr + 宽度 > MEM_SIZE 即越界（注意 uint32 回绕，用
  *    addr > MEM_SIZE - width 的写法更稳）；
