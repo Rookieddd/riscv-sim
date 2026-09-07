@@ -1,4 +1,4 @@
-/* loader.c —— 【助手示范实现】（week1.md ④-T3）
+/* loader.c
  * 使用方式：读懂每一行 → 合上本文件独立重写 → 用你的版本替换整个文件，
  *           以 feat(loader) 提交，并在 commit message 里写明你与示范的差异点。
  * 防御式解析四原则（T3 概念题 C3 的答案素材）：
@@ -18,32 +18,35 @@
  * 校验点：恰好 8 位 hex；第 9 个字符必须是行尾/空白/注释符。 */
 static int parse_hex_word(const char *s, uint32_t *out)
 {
-    uint32_t v = 0;
-
-    for (int i = 0; i < 8; i++) {
-        char c = s[i];
-        int d;
-
-        if (c >= '0' && c <= '9')
-            d = c - '0';
-        else if (c >= 'a' && c <= 'f')
-            d = c - 'a' + 10;
-        else if (c >= 'A' && c <= 'F')
-            d = c - 'A' + 10;
+    uint32_t id = 0;
+    for(int i =0 ;i < 8 ;i++ ){
+        char cur = s[i];
+        int temp = 0;
+        if(cur >= '0' || cur <= '9')
+            temp = cur - '0';
+        else if(cur >= 'a' || cur <= 'f')
+            temp = cur - 'a' + 10;
+        else if(cur >= 'A' || cur <= 'F')
+            temp = cur - 'A' + 10;
         else
             return 0;
-        v = (v << 4) | (uint32_t)d;
+        id =id << 4 | (uint32_t)temp;
     }
-
     char tail = s[8];
-    if (tail != '\0' && tail != '\n' && tail != '\r' &&
-        !isspace((unsigned char)tail) && tail != '#')
-        return 0;   /* 8 位之后还有别的字符：按非法行处理 */
-
-    *out = v;
+    if (tail != '\0' && !isspace((unsigned char)tail) && tail != '#')
+    //判断一个串结尾是否合法
+    //isspace 判断taili是否是' '、'\t'、'\n'、'\v'、'\f'、'\r'，如果不是，则返回0，取反,if条件成立
+    
+        return 0;
+    *out = id;
     return 1;
 }
-
+/*
+1)首先只读方式文件，如果fopen返回NULL，则输出打开失败
+2)将信息存到p中，跳过无效信息（空格，空行，注释行）
+  判断指令行和指令地址是否合法，写入内存，地址向后移动四位并计数
+3)输出计数结果，如果没有指令，打印输出
+*/
 size_t load_hex(const char *path, memory_t *mem)
 {
     FILE *fp = fopen(path, "r");
@@ -61,9 +64,9 @@ size_t load_hex(const char *path, memory_t *mem)
         lineno++;
 
         const char *p = line;
-        while (isspace((unsigned char)*p))   /* 跳过行首空白 */
+        while (isspace((unsigned char)*p))   
             p++;
-        if (*p == '\0' || *p == '#')         /* 空行 / 注释行 */
+        if (*p == '\0' || *p == '#')         
             continue;
 
         uint32_t inst;

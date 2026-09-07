@@ -4,8 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-static void mem_abort(uint32_t addr, int bytes, int code, const char *why);
-
 static void mem_abort(uint32_t addr, int bytes, int code, const char *why)
 {
     fprintf(stderr, "memory: 非法访问 addr=0x%08X (%d 字节): %s\n",
