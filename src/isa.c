@@ -25,9 +25,38 @@
  * 自检：isa_decode(0x00A00093) 应得到 rd=1, rs1=0, imm=10, opcode=0x13；
  *      isa_decode(0xFFF00093) 应得到 imm=-1（附加题，先做它）。
  */
-int isa_decode(uint32_t inst, decoded_t *out)
-{
-    (void)inst;
-    (void)out;
+int isa_decode(uint32_t inst, decoded_t *out){   
+    out->opcode = (uint8_t)(inst & 0x7F); 
+    out->raw = inst;
+    out->rd = (inst >>  7) & 0x1F;
+    out->rs1 = (inst >> 15) & 0x1F;
+    out->rs2 = (inst >> 20) & 0x1F;
+    out->funct3 = (inst >> 12) & 0x07;
+    out->funct7 = (inst >> 25) & 0x7F;
+    if(out->opcode == OP_R){
+        out->fmt = FMT_R;
+        out->imm = 0;
+        return ISA_OK;
+    }
+    else if(out->opcode == OP_I||out->opcode == OP_LOAD){
+        out->fmt = FMT_I;
+        out->imm = (int32_t)inst >> 20;
+        return ISA_OK;
+    }
+    else if(out->opcode == OP_STORE){
+        out->fmt = FMT_S;
+        uint32_t imm12 = ((inst >> 25) << 5) | ((inst >> 7) & 0x1F);
+        out->imm = (int32_t)(imm12 << 20) >> 20;
+        return ISA_OK;
+    }
+    else if(out->opcode == OP_SYSTEM){
+        if (inst == 0x00000073) {   // ECALL
+            out->fmt = FMT_SYS;
+            out->imm = 0;
+            return ISA_OK;
+        }
+        return ISA_ERR_UNSUPPORTED;
+    }
+  
     return ISA_ERR_UNSUPPORTED;
 }
