@@ -22,11 +22,11 @@ static int parse_hex_word(const char *s, uint32_t *out)
     for(int i =0 ;i < 8 ;i++ ){
         char cur = s[i];
         int temp = 0;
-        if(cur >= '0' || cur <= '9')
+        if(cur >= '0' && cur <= '9')          /* 原来是 || ：条件恒真，垃圾全放行 */
             temp = cur - '0';
-        else if(cur >= 'a' || cur <= 'f')
+        else if(cur >= 'a' && cur <= 'f')
             temp = cur - 'a' + 10;
-        else if(cur >= 'A' || cur <= 'F')
+        else if(cur >= 'A' && cur <= 'F')
             temp = cur - 'A' + 10;
         else
             return 0;
